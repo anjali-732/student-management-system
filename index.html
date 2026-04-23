@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        h2 { color: #1e293b; text-align: center; }
+
+        /* Form Styling */
+        .form-group { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 20px; }
+        input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; transition: 0.3s; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-add:hover { background: #1d4ed8; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; }
+
+        .btn-delete { background: var(--danger); color: white; padding: 5px 10px; font-size: 12px; }
+        .btn-delete:hover { background: #b91c1c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Management System</h2>
+    
+    <div class="form-group">
+        <input type="text" id="stdName" placeholder="Student Name">
+        <input type="text" id="stdID" placeholder="Student ID">
+        <input type="email" id="stdEmail" placeholder="Email Address">
+        <button class="btn-add" onclick="addStudent()">Add Student</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="studentList">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', displayStudents);
+
+    function addStudent() {
+        const name = document.getElementById('stdName').value;
+        const id = document.getElementById('stdID').value;
+        const email = document.getElementById('stdEmail').value;
+
+        if(name === '' || id === '' || email === '') {
+            alert('Please fill all fields');
+            return;
+        }
+
+        const student = { name, id, email };
+        let students = localStorage.getItem('students') ? JSON.parse(localStorage.getItem('students')) : [];
+        
+        students.push(student);
+        localStorage.setItem('students', JSON.stringify(students));
+        
+        clearFields();
+        displayStudents();
+    }
+
+    function displayStudents() {
+        const list = document.getElementById('studentList');
+        let students = localStorage.getItem('students') ? JSON.parse(localStorage.getItem('students')) : [];
+        
+        list.innerHTML = '';
+        students.forEach((student, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.name}</td>
+                <td>${student.id}</td>
+                <td>${student.email}</td>
+                <td><button class="btn-delete" onclick="deleteStudent(${index})">Delete</button></td>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    function deleteStudent(index) {
+        let students = JSON.parse(localStorage.getItem('students'));
+        students.splice(index, 1);
+        localStorage.setItem('students', JSON.stringify(students));
+        displayStudents();
+    }
+
+    function clearFields() {
+        document.getElementById('stdName').value = '';
+        document.getElementById('stdID').value = '';
+        document.getElementById('stdEmail').value = '';
+    }
+</script>
+
+</body>
+</html>
